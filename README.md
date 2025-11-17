@@ -1,23 +1,23 @@
+# 🩺 Medical Patient Routing Assistant
 
+AI-powered clinical triage engine built with LLMs & FastAPI.
 
+## 🚑 Banner
 
-
-<h1 align="center">🩺 Medical Patient Routing Assistant</h1>
-<h3 align="center">AI-powered clinical triage engine built with LLMs & FastAPI</h3>
-
+<h1 align="center" style="font-weight:700;">🚑 Medical Patient Routing Assistant</h1>
+<h3 align="center">AI-powered triage engine that analyzes symptoms, asks clinical follow-up questions, and routes patients to the correct medical department.</h3>
 <p align="center">
-  <img src="https://img.shields.io/badge/Status-Active-success?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Tech-FastAPI-blue?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/LLM-Groq%20LLaMA3-purple?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Frontend-HTML%2FCSS%2FJS-yellow?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/AI%20Triage-FastAPI-blue?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Groq-LLaMA3-purple?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Clinical-Routing-green?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Frontend-HTML%2C%20CSS%2C%20JS-yellow?style=for-the-badge" />
 </p>
 
 ---
 
 ## 🧠 Overview
 
-The **Medical Patient Routing Assistant** is an intelligent AI triage system that helps route patients to the correct medical department using structured conversation.  
-It evaluates symptoms across multiple messages, asks follow-up questions, detects red flags, and finally recommends the right specialist with urgency classification.
+The **Medical Patient Routing Assistant** is an intelligent AI triage system that helps route patients to the correct medical department using structured conversation. It evaluates symptoms across multiple messages, asks follow-up questions, detects red flags, and finally recommends the right specialist with urgency classification.
 
 Built using **FastAPI + Groq LLaMA + Intelligent Memory + Modern UI**.
 
@@ -25,117 +25,93 @@ Built using **FastAPI + Groq LLaMA + Intelligent Memory + Modern UI**.
 
 ## 🚀 Features
 
-### ✔ Intelligent Clinical Triage  
-Understands symptoms and asks context-aware follow-up questions.
-
-### ✔ Specialist Recommendation  
-Smart routing to:
-- Cardiologist  
-- Neurologist  
-- ENT  
-- Dermatologist  
-- Orthopedics  
-- Pulmonologist  
-- Gastroenterologist  
-- Psychologist  
-- General Physician  
-…based strictly on symptoms.
-
-### ✔ Emergency Detection  
-Flags critical cases with **Urgency: HIGH**.
-
-### ✔ Multi-turn Conversation Memory  
-Maintains conversation until user reloads the page.
-
-### ✔ Clean & Professional UI  
-- Chat bubbles  
-- Structured follow-up question formatting  
-- Doctor recommendation cards  
-- Auto newline rendering  
+* ✔ Intelligent clinical triage asking contextual follow-up questions
+* ✔ Specialist recommendation (Cardiology, Neuro, ENT, etc.)
+* ✔ Emergency red-flag detection
+* ✔ Multi-turn conversation memory
+* ✔ Clean UI with structured cards
 
 ---
 
 ## 🏗️ Tech Stack
 
-<p align="center">
-  <img src="https://skillicons.dev/icons?i=python,fastapi,html,css,javascript,github,vscode&perline=7" />
-</p>
+* Python
+* FastAPI
+* Groq LLaMA 3.3
+* HTML / CSS / JavaScript
+* Git & GitHub
 
 ---
 
 ## 📂 Project Structure
 
 ```
-
 📦 medical-patient-routing-assistant
-┣ 📜 main.py                         # FastAPI backend + LLM logic
-┣ 📜 index.html                      # Frontend interface
-┣ 📜 .env                            # Groq API key
-┣ 📜 README.md                       # Documentation
-┗ 📂 (optional static assets)
-
+ ┣ 📜 main.py
+ ┣ 📜 index.html
+ ┣ 📜 .env
+ ┣ 📜 README.md
 ```
 
 ---
 
 ## ⚙️ How It Works
 
-### 1️⃣ User Sends Symptoms  
-The assistant interprets the complaint.
+### 1️⃣ User Sends Symptoms
 
-### 2️⃣ System Applies Medical Logic  
-- Maps symptoms → likely specialties  
-- Asks differentiating questions  
-- Considers emergency flags  
+Assistant listens and interprets.
 
-### 3️⃣ Structured Output is Returned:
+### 2️⃣ System Applies Medical Logic
 
-**Follow-up Format**
+* Maps symptoms → specialties
+* Asks differentiating questions
+* Detects red flags
+
+### 3️⃣ Outputs in Required Format
+
+**Follow-up Example:**
+
 ```
-
 (type: follow_up)
 Q1: <question>
 Q2: <question>
 Q3: <question>
-
 ```
 
-**Final Recommendation Format**
-```
+**Final Recommendation:**
 
+```
 (type: final_recommendation)
 Doctor/Specialty: <name>
 Reason: <clinical reason>
 Urgency: normal | moderate | high
-
-````
+```
 
 ---
 
-## 🚀 Running Locally
+## 💻 Run Locally
 
-### 1. Install dependencies
-```bash
+### Install dependencies
+
+```
 pip install fastapi uvicorn python-dotenv groq
-````
-
-### 2. Add your Groq API key
-
-Create `.env`:
-
-```
-APIKEY=your_groq_api_key_here
 ```
 
-### 3. Start the server
+### Add API key
 
-```bash
+In `.env`:
+
+```
+APIKEY=your_groq_api_key
+```
+
+### Start server
+
+```
 uvicorn main:app --reload
 ```
 
-### 4. Open the UI
-
-Visit:
+### Open in browser
 
 ```
 http://127.0.0.1:8000
@@ -143,52 +119,40 @@ http://127.0.0.1:8000
 
 ---
 
-## 🛡️ Safety Notes
+## 📥 Clone This Project
 
-* This project **does not diagnose diseases**.
-* It only performs **department routing** based on symptoms.
-* Not a replacement for certified medical professionals.
-
----
-
-## ✨ Future Improvements
-
-* 🔊 Voice-based symptom input
-* 🌙 Dark mode
-* 🧠 Department-level confidence scoring
-* 🏥 Integration with hospital systems
+```
+git clone https://github.com/HassanCodesIt/medical-patient-routing-assistant.git
+cd medical-patient-routing-assistant
+```
 
 ---
 
-## 🤝 Contributing
+## 🛡 Safety Notes
 
-Contributions, issues, and feature ideas are welcome!
+* Does NOT diagnose diseases
+* Only routes based on symptoms
+* Not a replacement for medical professionals
+
+---
+
+## ✨ Future Enhancements
+
+* Voice-based symptom input
+* Dark mode UI
+* Symptom analytics dashboard
+* Hospital system integration
 
 ---
 
 ## 👨‍💻 Author
 
-<h3 align="center">Built with ❤️ by <a href="https://github.com/HassanCodesIt">Hassan Huda</a></h3>
+Built with ❤️ by **Hassan Huda**
 
-<p align="center">
-  <a href="https://www.linkedin.com/in/hassan-huda/">
-    <img src="https://img.shields.io/badge/LinkedIn-0A66C2?logo=linkedin&logoColor=white&style=for-the-badge" />
-  </a>
-  <a href="mailto:hassanhudapalakkad@gmail.com">
-    <img src="https://img.shields.io/badge/Gmail-Contact-red?logo=gmail&logoColor=white&style=for-the-badge" />
-  </a>
-  <a href="https://github.com/HassanCodesIt">
-    <img src="https://img.shields.io/badge/GitHub-171515?logo=github&logoColor=white&style=for-the-badge" />
-  </a>
-</p>
+* GitHub: [https://github.com/HassanCodesIt](https://github.com/HassanCodesIt)
+* LinkedIn: [https://www.linkedin.com/in/hassan-huda/](https://www.linkedin.com/in/hassan-huda/)
+* Email: [hassanhudapalakkad@gmail.com](mailto:hassanhudapalakkad@gmail.com)
 
 ---
 
-<p align="center">
-  <sub><b>✨ Empowering healthcare triage with AI-driven intelligence ✨</b></sub>
-</p>
-```
-
----
-
-
+**✨ Empowering healthcare triage with AI-driven intelligence ✨**
