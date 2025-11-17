@@ -1,7 +1,7 @@
 
 
 
-```markdown
+
 <h1 align="center">🩺 Medical Patient Routing Assistant</h1>
 <h3 align="center">AI-powered clinical triage engine built with LLMs & FastAPI</h3>
 
