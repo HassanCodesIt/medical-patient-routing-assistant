@@ -2,7 +2,6 @@
 
 AI-powered clinical triage engine built with LLMs & FastAPI.
 
-## 🚑 Banner
 
 <h1 align="center" style="font-weight:700;">🚑 Medical Patient Routing Assistant</h1>
 <h3 align="center">AI-powered triage engine that analyzes symptoms, asks clinical follow-up questions, and routes patients to the correct medical department.</h3>
