@@ -1,15 +1,16 @@
-from fastapi import FastAPI, Form
+
+from fastapi import FastAPI, Form, UploadFile, File
 from groq import Groq
 from fastapi.responses import FileResponse
 from dotenv import load_dotenv
 import os
+from groq import Groq
+from huggingface_hub import upload_file
 
 app = FastAPI()
 
 conversation_history = []
 
-if len(conversation_history) == 20:
-    conversation_history.pop(0)
 
 
 def store_message(role, content):
@@ -47,6 +48,7 @@ RULES:
 4. Finalize recommendation only when confident.
 5. If symptoms span multiple specialties, ask 1–2 follow-up questions.
 6. Detect emergency red flags and mark urgency HIGH.
+7. After you send ONE follow_up message, the NEXT reply FROM YOU must always be the final_recommendation message.
 
 FOLLOW-UP QUESTION GENERATION RULES:
 - Ask exactly 2–4 short, clinical questions based on the symptoms.
@@ -59,12 +61,12 @@ FOLLOW-UP QUESTION GENERATION RULES:
 FLOW LOGIC:
 - Collect initial symptoms.
 - Ask clarifying questions.
+- After sending ONE follow_up, the next message must be a final_recommendation.
 - Map symptoms to specialties.
-- Ask differentiating questions.
 - Finalize recommendation only after sufficient clarity.
 - Return the answer in strict structured format.
 
-OUTPUT FORMAT (STRICT — FOLLOW EXACTLY)(PLEASE DO AVOID THE MARKDOWN FORMATTING):                           
+OUTPUT FORMAT (STRICT — FOLLOW EXACTLY)(PLEASE DO AVOID THE MARKDOWN FORMATTING):
 
 For follow-up questions:
 (type: follow_up)
@@ -80,6 +82,7 @@ Reason: <short clinical reason>
 Urgency: normal | moderate | high
 
 NO other text outside these templates.
+
 
 """
 
@@ -103,3 +106,26 @@ NO other text outside these templates.
     store_message("assistant", full_answer)
 
     return full_answer
+
+
+@app.post("/speech-to-text")
+async def speechtotext(audio: UploadFile = File(...)):
+    load_dotenv()
+    APIKEY = os.getenv("APIKEY")
+    client = Groq(api_key=APIKEY)
+    
+    audio_bytes = await audio.read() #read the uploaded file as bytes
+    
+    
+    
+    transcription = client.audio.transcriptions.create(
+        file=(audio.filename, audio_bytes),
+        model="whisper-large-v3-turbo",
+        temperature=0,
+        response_format="verbose_json",
+        )
+    transcription_text=transcription.text
+        
+    llmresponse =llm(prompt=transcription_text)
+    
+    return {"transcription": transcription_text, "llm_response": llmresponse}

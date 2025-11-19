@@ -88,6 +88,20 @@
         button:hover {
             background: #005fcc;
         }
+
+        #recordBtn {
+            background: #ff3b30;
+        }
+
+        #recordBtn.recording {
+            background: #9e0000;
+        }
+
+        .transcription {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -100,29 +114,29 @@
     <form id="form">
         <input type="text" id="prompt" placeholder="Describe your symptoms..." required>
         <button type="submit">Send</button>
+        <button type="button" id="recordBtn">🎤 Record</button>
     </form>
 </div>
-
 
 <script>
     const form = document.getElementById("form");
     const promptInput = document.getElementById("prompt");
     const messagesDiv = document.getElementById("messages");
+    const recordBtn = document.getElementById("recordBtn");
+
+    let mediaRecorder;
+    let audioChunks = [];
+    let isRecording = false;
 
     function addMessage(role, text) {
-
-        // remove wrapping quotes if LLM outputs them
         text = text.replace(/^"(.*)"$/, "$1");
-
-        // convert both \n and \\n into actual line breaks
         text = text.replace(/\\n/g, "<br>").replace(/\n/g, "<br>");
 
         const div = document.createElement("div");
         div.classList.add("msg", role);
 
-        // FOLLOW-UP QUESTIONS FORMATTING
+        // FOLLOW-UP
         if (text.startsWith("(type: follow_up)")) {
-
             let cleaned = text
                 .replace("(type: follow_up)", "")
                 .trim()
@@ -132,19 +146,23 @@
                 .replace(/<br>Q4:/, "<br>4️⃣ ");
 
             div.classList.add("follow-card");
-            div.innerHTML = `
-                <strong>📝 Follow-up Questions:</strong><br>${cleaned}
-            `;
+            div.innerHTML = `<strong>📝 Follow-up Questions:</strong><br>${cleaned}`;
         }
 
-        // FINAL RECOMMENDATION FORMATTING
+        // FINAL RECOMMENDATION
         else if (text.startsWith("(type: final_recommendation)")) {
-
             let cleaned = text.replace("(type: final_recommendation)", "").trim();
 
             const doctor = cleaned.match(/Doctor\/Specialty:\s*(.*)/)?.[1] || "";
             const reason = cleaned.match(/Reason:\s*(.*)/)?.[1] || "";
             const urgency = cleaned.match(/Urgency:\s*(.*)/)?.[1] || "";
+
+            // remove duplicates
+            cleaned = cleaned
+                .replace(/Doctor\/Specialty:.*\n?/, "")
+                .replace(/Reason:.*\n?/, "")
+                .replace(/Urgency:.*\n?/, "")
+                .trim();
 
             div.classList.add("final-card");
             div.innerHTML = `
@@ -155,7 +173,7 @@
             `;
         }
 
-        // fallback (regular messages)
+        // NORMAL TEXT
         else {
             div.innerHTML = text;
         }
@@ -164,22 +182,19 @@
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
 
-
+    /* ✉️ TEXT SEND */
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         const userText = promptInput.value.trim();
-        if (userText === "") return;
+        if (!userText) return;
 
         addMessage("user", userText);
 
         const formData = new FormData();
         formData.append("prompt", userText);
 
-        const response = await fetch("/llm", {
-            method: "POST",
-            body: formData
-        });
+        const response = await fetch("/llm", { method: "POST", body: formData });
 
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
@@ -192,8 +207,50 @@
         }
 
         addMessage("assistant", assistantText);
-
         promptInput.value = "";
+    });
+
+    /* 🎤 RECORDING LOGIC */
+    recordBtn.addEventListener("click", async () => {
+
+        if (!isRecording) {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+
+            mediaRecorder.onstop = async () => {
+
+                const audioBlob = new Blob(audioChunks, { type: "audio/mp4" });
+
+                const formData = new FormData();
+                formData.append("audio", audioBlob, "audio.m4a");
+
+                const response = await fetch("/speech-to-text", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const result = await response.json();
+                const transcription = result.transcription;
+
+                // ⭐ Put transcription into textbox
+                promptInput.value = transcription;
+                promptInput.focus();
+            };
+
+            mediaRecorder.start();
+            recordBtn.textContent = "⏹ Stop";
+            recordBtn.classList.add("recording");
+            isRecording = true;
+
+        } else {
+            mediaRecorder.stop();
+            recordBtn.textContent = "🎤 Record";
+            recordBtn.classList.remove("recording");
+            isRecording = false;
+        }
     });
 </script>
 
