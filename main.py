@@ -5,7 +5,9 @@ from fastapi.responses import FileResponse
 from dotenv import load_dotenv
 import os
 from groq import Groq
-from huggingface_hub import upload_file
+from gtts import gTTS
+
+
 
 app = FastAPI()
 
@@ -28,6 +30,8 @@ def html():
 
 @app.post("/llm")
 def llm(prompt: str = Form(...)):
+    global last_llm_output
+    last_llm_output = ""
     store_message("user", prompt)
     load_dotenv()
     APIKEY = os.getenv("APIKEY")
@@ -36,52 +40,36 @@ You are a medical triage and patient-routing assistant with deep knowledge of he
 
 OBJECTIVES:
 - Categorize and route patients to the correct doctor based on symptoms.
-- Do NOT finalize a doctor/specialty until sufficient information is gathered.
-- Ask follow-up questions whenever symptoms are incomplete or ambiguous.
+- NEVER finalize a doctor/specialty until sufficient information is gathered.
+- Ask ONLY ONE follow-up question at a time.
 - Recommend the appropriate specialist only when confident.
 - If symptoms are vague or mild, route them to General OP / General Physician.
 
-RULES:
-1. Classify based ONLY on symptoms and details provided.
-2. Ask clarifying questions when needed.
-3. Do not provide medical diagnoses—only routing.
-4. Finalize recommendation only when confident.
-5. If symptoms span multiple specialties, ask 1–2 follow-up questions.
-6. Detect emergency red flags and mark urgency HIGH.
-7. After you send ONE follow_up message, the NEXT reply FROM YOU must always be the final_recommendation message.
-
-FOLLOW-UP QUESTION GENERATION RULES:
-- Ask exactly 2–4 short, clinical questions based on the symptoms.
-- DO NOT write introductory sentences.
-- DO NOT explain why you are asking.
-- DO NOT use paragraphs or long text.
-- Each question must be short and direct.
-- Format the follow-up output exactly as defined below.
+FOLLOW-UP QUESTION RULES:
+- You MUST output exactly ONE short, direct clinical question.
+- No introductions, no explanations, no paragraphs.
+- Your follow_up message MUST contain only:
+  Q1: <short question>
+- Ask one question, stop, and wait for patient reply.
 
 FLOW LOGIC:
-- Collect initial symptoms.
-- Ask clarifying questions.
-- After sending ONE follow_up, the next message must be a final_recommendation.
-- Map symptoms to specialties.
-- Finalize recommendation only after sufficient clarity.
-- Return the answer in strict structured format.
+- Collect initial symptom message.
+- Send ONE follow_up message containing exactly ONE question.
+- After receiving the user's answer, your NEXT response MUST be a final_recommendation.
 
-OUTPUT FORMAT (STRICT — FOLLOW EXACTLY)(PLEASE DO AVOID THE MARKDOWN FORMATTING):
+OUTPUT FORMAT (STRICT — FOLLOW EXACTLY):
 
-For follow-up questions:
+For follow-up:
 (type: follow_up)
-Q1: <short question>
-Q2: <short question>
-Q3: <short question>
-Q4: <short question>   (optional, only if needed)
+ <short question>
 
 For final recommendation:
-(type: final_recommendation)
+(final recommendation)
 Doctor/Specialty: <name>
 Reason: <short clinical reason>
 Urgency: normal | moderate | high
 
-NO other text outside these templates.
+NO OTHER TEXT outside these templates.
 
 
 """
@@ -104,12 +92,15 @@ NO other text outside these templates.
         full_answer += chunk.choices[0].delta.content or ""
     
     store_message("assistant", full_answer)
-
+    
+    last_llm_output = full_answer
+    
     return full_answer
 
 
 @app.post("/speech-to-text")
 async def speechtotext(audio: UploadFile = File(...)):
+    
     load_dotenv()
     APIKEY = os.getenv("APIKEY")
     client = Groq(api_key=APIKEY)
@@ -129,3 +120,23 @@ async def speechtotext(audio: UploadFile = File(...)):
     llmresponse =llm(prompt=transcription_text)
     
     return {"transcription": transcription_text, "llm_response": llmresponse}
+
+
+
+audio_id=[]
+
+
+
+@app.post("/text-to-speech")
+def tts():
+    
+    
+    next_id=len(audio_id)+1
+    
+    tts=gTTS(last_llm_output)
+    filename=f'audio{next_id}.mp3'
+    tts.save(filename)
+    
+    audio_id.append(filename)
+    return FileResponse(filename)
+    
