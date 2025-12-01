@@ -1,1 +1,7 @@
-env
+*
+
+
+!index.html
+!main.py
+!README.md
+!requirements.txt
