@@ -1,12 +1,11 @@
-
-from fastapi import FastAPI, Form, UploadFile, File
+from fastapi import FastAPI, Form, UploadFile, File, HTTPException
 from groq import Groq
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from dotenv import load_dotenv
 import os
 from groq import Groq
 from gtts import gTTS
-
+from gtts.tts import gTTSError
 
 
 app = FastAPI()
@@ -129,14 +128,31 @@ audio_id=[]
 
 @app.post("/text-to-speech")
 def tts():
+    try:
+        next_id = len(audio_id) + 1
+        
+        tts = gTTS(last_llm_output)
+        filename = f'audio{next_id}.mp3'
+        tts.save(filename)
+        
+        audio_id.append(filename)
+        return FileResponse(filename)
     
+    except gTTSError as e:
+        # Check if it's a rate limit error
+        if "429" in str(e):
+            raise HTTPException(
+                status_code=429,
+                detail="TTS service rate limit exceeded. Please use browser-based speech instead."
+            )
+        else:
+            raise HTTPException(
+                status_code=500,
+                detail=f"TTS service error: {str(e)}"
+            )
     
-    next_id=len(audio_id)+1
-    
-    tts=gTTS(last_llm_output)
-    filename=f'audio{next_id}.mp3'
-    tts.save(filename)
-    
-    audio_id.append(filename)
-    return FileResponse(filename)
-    
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Unexpected error: {str(e)}"
+        )

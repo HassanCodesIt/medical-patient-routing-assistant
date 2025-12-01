@@ -1,312 +1,511 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Medical Triage Assistant</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Triage Assistant</title>
 
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "Inter", sans-serif;
-    }
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Inter", sans-serif;
+        }
 
-    body {
-        background: #f5f6fa;
-        display: flex;
-        justify-content: center;
-        padding: 40px 0;
-    }
+        body {
+            background: #f5f6fa;
+            display: flex;
+            justify-content: center;
+            padding: 40px 0;
+        }
 
-    /* MAIN CHAT WRAPPER */
-    .chat-wrapper {
-        width: 95%;
-        max-width: 850px;
-        height: 92vh;
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 20px 45px rgba(0,0,0,0.08);
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        position: relative;
-    }
+        /* MAIN CHAT WRAPPER */
+        .chat-wrapper {
+            width: 95%;
+            max-width: 850px;
+            height: 92vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
 
-    /* HEADER */
-    .chat-header {
-        display: flex;
-        align-items: center;
-        padding: 20px;
-        border-bottom: 1px solid #eee;
-    }
+        /* HEADER */
+        .chat-header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
 
-    .avatar {
-        background: #7b2ff7;
-        width: 45px;
-        height: 45px;
-        display: flex;
-        color: white;
-        justify-content: center;
-        align-items: center;
-        border-radius: 50%;
-        font-weight: 600;
-        margin-right: 14px;
-    }
+        .avatar {
+            background: #7b2ff7;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            color: white;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            font-weight: 600;
+            margin-right: 14px;
+        }
 
-    .title {
-        font-size: 19px;
-        font-weight: 600;
-    }
+        .title {
+            font-size: 19px;
+            font-weight: 600;
+        }
 
-    /* DATE DIVIDER */
-    .date-divider {
-        text-align: center;
-        padding: 10px 0;
-        font-size: 12px;
-        color: #888;
-        border-bottom: 1px solid #eee;
-    }
+        /* DATE DIVIDER */
+        .date-divider {
+            text-align: center;
+            padding: 10px 0;
+            font-size: 12px;
+            color: #888;
+            border-bottom: 1px solid #eee;
+        }
 
-    /* CHAT BODY */
-    #messages {
-        flex: 1;
-        padding: 20px;
-        overflow-y: auto;
-        padding-bottom: 120px;
-    }
+        /* CHAT BODY */
+        #messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            padding-bottom: 120px;
+        }
 
-    #messages::-webkit-scrollbar {
-        width: 8px;
-    }
-    #messages::-webkit-scrollbar-thumb {
-        background: #d0d0d0;
-        border-radius: 10px;
-    }
+        #messages::-webkit-scrollbar {
+            width: 8px;
+        }
 
-    /* BUBBLE STYLES */
-    .msg {
-        max-width: 75%;
-        padding: 14px 18px;
-        margin: 14px 0;
-        border-radius: 18px;
-        font-size: 15px;
-        line-height: 1.45;
-        position: relative;
-        animation: fadeIn .25s ease;
-    }
+        #messages::-webkit-scrollbar-thumb {
+            background: #d0d0d0;
+            border-radius: 10px;
+        }
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(5px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+        /* BUBBLE STYLES */
+        .msg {
+            max-width: 75%;
+            padding: 14px 18px;
+            margin: 14px 0;
+            border-radius: 18px;
+            font-size: 15px;
+            line-height: 1.45;
+            position: relative;
+            animation: fadeIn .25s ease;
+        }
 
-    .assistant {
-        background: #f0f0f3;
-        margin-right: auto;
-        border-bottom-left-radius: 6px;
-    }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
 
-    .user {
-        background: #7b2ff7;
-        color: white;
-        margin-left: auto;
-        border-bottom-right-radius: 6px;
-    }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    /* FOLLOW-UP CARD */
-    .follow-card {
-        background: #fff6d8;
-        border-left: 6px solid #ffcf3f;
-        color: #6c4a00;
-        padding: 16px;
-        border-radius: 12px;
-    }
+        .assistant {
+            background: #f0f0f3;
+            margin-right: auto;
+            border-bottom-left-radius: 6px;
+        }
 
-    /* FINAL CARD */
-    .final-card {
-        background: #e8ffef;
-        border-left: 6px solid #38c172;
-        padding: 18px;
-        border-radius: 12px;
-        color: #1e6f43;
-        font-size: 15px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
+        .user {
+            background: #7b2ff7;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 6px;
+        }
 
-    /* SPEAK BUTTON */
-    .speak-btn {
-        margin-top: 10px;
-        padding: 6px 12px;
-        background: #28a745;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 13px;
-    }
+        /* FOLLOW-UP CARD */
+        .follow-card {
+            background: #fff6d8;
+            border-left: 6px solid #ffcf3f;
+            color: #6c4a00;
+            padding: 16px;
+            border-radius: 12px;
+        }
 
-    /* COMPOSER FIXED AT BOTTOM */
-    .composer {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        padding: 18px;
-        background: white;
-        border-top: 1px solid #ddd;
-        display: flex;
-        gap: 12px;
-    }
+        /* FINAL CARD */
+        .final-card {
+            background: #e8ffef;
+            border-left: 6px solid #38c172;
+            padding: 18px;
+            border-radius: 12px;
+            color: #1e6f43;
+            font-size: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
 
-    .composer input {
-        flex: 1;
-        padding: 14px;
-        border-radius: 14px;
-        border: 1px solid #ccc;
-        font-size: 15px;
-    }
+        /* SPEAK BUTTON */
+        .speak-btn {
+            margin-top: 10px;
+            padding: 6px 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
 
-    .btn-send {
-        padding: 14px 20px;
-        border-radius: 14px;
-        background: #7b2ff7;
-        border: none;
-        color: white;
-        cursor: pointer;
-        font-weight: 600;
-    }
+        /* COMPOSER FIXED AT BOTTOM */
+        .composer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 18px;
+            background: white;
+            border-top: 1px solid #ddd;
+            display: flex;
+            gap: 12px;
+        }
 
-    .btn-record {
-        padding: 14px 20px;
-        border-radius: 14px;
-        background: #ff4d4f;
-        border: none;
-        color: white;
-        cursor: pointer;
-        font-weight: 600;
-    }
+        .composer input {
+            flex: 1;
+            padding: 14px;
+            border-radius: 14px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+        }
 
-    .btn-record.recording {
-        background: #c40000;
-        box-shadow: 0 0 12px rgba(255,0,0,0.5);
-    }
+        .btn-send {
+            padding: 14px 20px;
+            border-radius: 14px;
+            background: #7b2ff7;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
 
-    /* INDICATORS */
-    .indicator {
-        position: absolute;
-        bottom: 80px;
-        left: 20px;
-        background: #f1f1f1;
-        padding: 8px 14px;
-        border-radius: 10px;
-        font-size: 13px;
-        color: #444;
-        display: none;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    }
+        .btn-record {
+            padding: 14px 20px;
+            border-radius: 14px;
+            background: #ff4d4f;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
 
-    .loader-dots::after {
-        content: '';
-        animation: dots 1.2s infinite;
-    }
+        .btn-record.recording {
+            background: #c40000;
+            box-shadow: 0 0 12px rgba(255, 0, 0, 0.5);
+        }
 
-    @keyframes dots {
-        0% { content: '.'; }
-        33% { content: '..'; }
-        66% { content: '...'; }
-    }
-</style>
+        /* INDICATORS */
+        .indicator {
+            position: absolute;
+            bottom: 80px;
+            left: 20px;
+            background: #f1f1f1;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            color: #444;
+            display: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .loader-dots::after {
+            content: '';
+            animation: dots 1.2s infinite;
+        }
+
+        @keyframes dots {
+            0% {
+                content: '.';
+            }
+
+            33% {
+                content: '..';
+            }
+
+            66% {
+                content: '...';
+            }
+        }
+
+        /* ============================================ */
+        /* MOBILE RESPONSIVE STYLES */
+        /* ============================================ */
+
+        /* TABLET (769px - 1024px) */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            body {
+                padding: 20px 0;
+            }
+
+            .chat-wrapper {
+                width: 98%;
+                height: 95vh;
+            }
+
+            .msg {
+                max-width: 80%;
+            }
+        }
+
+        /* MOBILE (≤768px) */
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+            }
+
+            .chat-wrapper {
+                width: 100%;
+                max-width: 100%;
+                height: 100vh;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            /* HEADER */
+            .chat-header {
+                padding: 15px;
+            }
+
+            .avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 14px;
+                margin-right: 12px;
+            }
+
+            .title {
+                font-size: 16px;
+            }
+
+            /* DATE DIVIDER */
+            .date-divider {
+                font-size: 11px;
+                padding: 8px 0;
+            }
+
+            /* MESSAGES */
+            #messages {
+                padding: 15px 12px;
+                padding-bottom: 140px;
+            }
+
+            /* MESSAGE BUBBLES */
+            .msg {
+                max-width: 85%;
+                padding: 12px 15px;
+                margin: 10px 0;
+                font-size: 14px;
+                line-height: 1.5;
+            }
+
+            /* CARDS */
+            .follow-card,
+            .final-card {
+                padding: 14px;
+                font-size: 14px;
+            }
+
+            .final-card div {
+                margin-bottom: 8px;
+                word-wrap: break-word;
+            }
+
+            /* SPEAK BUTTON */
+            .speak-btn {
+                padding: 8px 14px;
+                font-size: 12px;
+                margin-top: 8px;
+                min-height: 44px;
+                /* Touch-friendly */
+            }
+
+            /* COMPOSER */
+            .composer {
+                padding: 12px;
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+
+            .composer input {
+                flex: 1 1 100%;
+                padding: 12px;
+                font-size: 16px;
+                /* Prevents zoom on iOS */
+                min-height: 44px;
+                /* Touch-friendly */
+            }
+
+            .btn-send,
+            .btn-record {
+                flex: 1;
+                padding: 12px 16px;
+                font-size: 14px;
+                min-height: 44px;
+                /* Touch-friendly */
+                border-radius: 12px;
+            }
+
+            /* INDICATORS */
+            .indicator {
+                bottom: 100px;
+                left: 12px;
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+        }
+
+        /* SMALL MOBILE (≤480px) */
+        @media (max-width: 480px) {
+            .title {
+                font-size: 15px;
+            }
+
+            .avatar {
+                width: 36px;
+                height: 36px;
+                font-size: 13px;
+            }
+
+            .msg {
+                max-width: 90%;
+                padding: 10px 13px;
+                font-size: 13px;
+            }
+
+            .composer {
+                padding: 10px;
+            }
+
+            .btn-send,
+            .btn-record {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+
+            .follow-card,
+            .final-card {
+                padding: 12px;
+                font-size: 13px;
+            }
+        }
+
+        /* LANDSCAPE MOBILE */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .chat-wrapper {
+                height: 100vh;
+            }
+
+            #messages {
+                padding-bottom: 100px;
+            }
+
+            .composer {
+                padding: 8px;
+            }
+
+            .btn-send,
+            .btn-record {
+                padding: 8px 12px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-<div class="chat-wrapper">
+    <div class="chat-wrapper">
 
-    <!-- HEADER -->
-    <div class="chat-header">
-        <div class="avatar">MT</div>
-        <div class="title">Medical Triage Assistant</div>
+        <!-- HEADER -->
+        <div class="chat-header">
+            <div class="avatar">MT</div>
+            <div class="title">Medical Triage Assistant</div>
+        </div>
+
+        <!-- DATE -->
+        <div class="date-divider">
+            <script>
+                document.write(new Date().toLocaleDateString("en-US", {
+                    year: "numeric", month: "long", day: "numeric"
+                }));
+            </script>
+        </div>
+
+        <!-- MESSAGES -->
+        <div id="messages"></div>
+
+        <!-- INDICATORS -->
+        <div id="recordingIndicator" class="indicator">🎤 Recording<span class="loader-dots"></span></div>
+        <div id="transcribingIndicator" class="indicator">⏳ Transcribing<span class="loader-dots"></span></div>
+        <div id="audioIndicator" class="indicator">🔊 Playing audio<span class="loader-dots"></span></div>
+
+        <!-- COMPOSER -->
+        <form id="form" class="composer">
+            <input id="prompt" type="text" placeholder="Describe your symptoms..." autocomplete="off" required>
+            <button type="submit" class="btn-send">Send</button>
+            <button type="button" id="recordBtn" class="btn-record">Record</button>
+        </form>
+
     </div>
 
-    <!-- DATE -->
-    <div class="date-divider">
-        <script>
-            document.write(new Date().toLocaleDateString("en-US", {
-                year: "numeric", month: "long", day: "numeric"
-            }));
-        </script>
-    </div>
 
-    <!-- MESSAGES -->
-    <div id="messages"></div>
+    <script>
+        /* DOM REFS */
+        const messagesDiv = document.getElementById("messages");
+        const promptInput = document.getElementById("prompt");
+        const recordBtn = document.getElementById("recordBtn");
+        const recordingIndicator = document.getElementById("recordingIndicator");
+        const transcribingIndicator = document.getElementById("transcribingIndicator");
+        const audioIndicator = document.getElementById("audioIndicator");
 
-    <!-- INDICATORS -->
-    <div id="recordingIndicator" class="indicator">🎤 Recording<span class="loader-dots"></span></div>
-    <div id="transcribingIndicator" class="indicator">⏳ Transcribing<span class="loader-dots"></span></div>
-    <div id="audioIndicator" class="indicator">🔊 Playing audio<span class="loader-dots"></span></div>
-
-    <!-- COMPOSER -->
-    <form id="form" class="composer">
-        <input id="prompt" type="text" placeholder="Describe your symptoms..." autocomplete="off" required>
-        <button type="submit" class="btn-send">Send</button>
-        <button type="button" id="recordBtn" class="btn-record">Record</button>
-    </form>
-
-</div>
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+        let audioPlayer = null;
 
 
-<script>
-/* DOM REFS */
-const messagesDiv = document.getElementById("messages");
-const promptInput = document.getElementById("prompt");
-const recordBtn = document.getElementById("recordBtn");
-const recordingIndicator = document.getElementById("recordingIndicator");
-const transcribingIndicator = document.getElementById("transcribingIndicator");
-const audioIndicator = document.getElementById("audioIndicator");
+        /* ADD MESSAGE FUNCTION */
+        function addMessage(role, raw) {
+            raw = raw.replace(/^"(.*)"$/, "$1");
+            raw = raw.replace(/\\n/g, "<br>").replace(/\n/g, "<br>");
 
-let mediaRecorder;
-let audioChunks = [];
-let isRecording = false;
-let audioPlayer = null;
+            const div = document.createElement("div");
+            div.classList.add("msg", role);
 
+            /* FOLLOW-UP */
+            if (raw.startsWith("(type: follow_up)")) {
+                let q = raw.replace("(type: follow_up)", "").trim();
+                q = q.replace(/Q1:/gi, "").replace(/"/g, "").trim();
 
-/* ADD MESSAGE FUNCTION */
-function addMessage(role, raw) {
-    raw = raw.replace(/^"(.*)"$/, "$1");
-    raw = raw.replace(/\\n/g, "<br>").replace(/\n/g, "<br>");
-
-    const div = document.createElement("div");
-    div.classList.add("msg", role);
-
-    /* FOLLOW-UP */
-    if (raw.startsWith("(type: follow_up)")) {
-        let q = raw.replace("(type: follow_up)", "").trim();
-        q = q.replace(/Q1:/gi, "").replace(/"/g, "").trim();
-
-        div.innerHTML = `
+                div.innerHTML = `
             <div class="follow-card">
                 <strong>📝 Follow-up Question:</strong><br>
                 ❓ ${q}
             </div>
         `;
-    }
+            }
 
-    /* FINAL RECOMMENDATION */
-    else if (
-        raw.startsWith("(final recommendation)") ||
-        raw.startsWith("(type: final_recommendation)")
-    ) {
-        let txt = raw
-            .replace("(final recommendation)", "")
-            .replace("(type: final_recommendation)", "")
-            .trim();
+            /* FINAL RECOMMENDATION */
+            else if (
+                raw.startsWith("(final recommendation)") ||
+                raw.startsWith("(type: final_recommendation)")
+            ) {
+                let txt = raw
+                    .replace("(final recommendation)", "")
+                    .replace("(type: final_recommendation)", "")
+                    .trim();
 
-        const doctor = txt.match(/Doctor\/Specialty:\s*(.*)/)?.[1] || "";
-        const reason = txt.match(/Reason:\s*(.*)/)?.[1] || "";
-        const urgency = txt.match(/Urgency:\s*(.*)/)?.[1] || "";
+                const doctor = txt.match(/Doctor\/Specialty:\s*(.*)/)?.[1] || "";
+                const reason = txt.match(/Reason:\s*(.*)/)?.[1] || "";
+                const urgency = txt.match(/Urgency:\s*(.*)/)?.[1] || "";
 
-        div.innerHTML = `
+                div.innerHTML = `
             <div class="final-card">
                 <div style="font-weight:700;margin-bottom:10px;">📌 Final Recommendation</div>
                 <div><b>👨‍⚕️ Specialist:</b> ${doctor}</div>
@@ -314,106 +513,159 @@ function addMessage(role, raw) {
                 <div><b>⚠️ Urgency:</b> ${urgency}</div>
             </div>
         `;
-    }
+            }
 
-    /* NORMAL TEXT */
-    else {
-        div.innerHTML = raw;
-    }
+            /* NORMAL TEXT */
+            else {
+                div.innerHTML = raw;
+            }
 
-    /* SPEAK BUTTON */
-    if (role === "assistant") {
-        const btn = document.createElement("button");
-        btn.textContent = "🔊 Speak";
-        btn.classList.add("speak-btn");
-        btn.onclick = playAudio;
-        div.appendChild(btn);
-    }
+            /* SPEAK BUTTON */
+            if (role === "assistant") {
+                const btn = document.createElement("button");
+                btn.textContent = "🔊 Speak";
+                btn.classList.add("speak-btn");
+                btn.onclick = playAudio;
+                div.appendChild(btn);
+            }
 
-    messagesDiv.appendChild(div);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-}
-
-
-/* PLAY AUDIO */
-async function playAudio() {
-    if (audioPlayer) audioPlayer.pause();
-    audioIndicator.style.display = "block";
-
-    const res = await fetch("/text-to-speech", { method: "POST" });
-    const blob = await res.blob();
-    audioPlayer = new Audio(URL.createObjectURL(blob));
-    audioPlayer.play();
-
-    audioPlayer.onended = () => audioIndicator.style.display = "none";
-}
+            messagesDiv.appendChild(div);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
 
 
-/* SEND MESSAGE */
-document.getElementById("form").onsubmit = async e => {
-    e.preventDefault();
+        /* PLAY AUDIO WITH ERROR HANDLING AND BROWSER FALLBACK */
+        async function playAudio(event) {
+            // Get the text content from the message bubble
+            const messageDiv = event.target.closest('.msg');
+            const textContent = messageDiv.textContent.replace('🔊 Speak', '').trim();
 
-    const text = promptInput.value.trim();
-    if (!text) return;
+            if (audioPlayer) audioPlayer.pause();
+            audioIndicator.style.display = "block";
 
-    addMessage("user", text);
+            try {
+                const res = await fetch("/text-to-speech", { method: "POST" });
 
-    const fd = new FormData();
-    fd.append("prompt", text);
+                // Check if response is OK
+                if (!res.ok) {
+                    const errorData = await res.json().catch(() => ({ detail: "Unknown error" }));
+                    console.warn("Server TTS failed:", errorData.detail);
 
-    const response = await fetch("/llm", { method: "POST", body: fd });
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let output = "";
+                    // Fall back to browser-based TTS
+                    useBrowserTTS(textContent);
+                    return;
+                }
 
-    while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        output += decoder.decode(value);
-    }
+                const blob = await res.blob();
+                audioPlayer = new Audio(URL.createObjectURL(blob));
+                await audioPlayer.play();
 
-    addMessage("assistant", output);
-    promptInput.value = "";
-};
+                audioPlayer.onended = () => audioIndicator.style.display = "none";
+
+            } catch (error) {
+                console.error("TTS error:", error);
+                // Fall back to browser-based TTS
+                useBrowserTTS(textContent);
+            }
+        }
+
+        /* BROWSER-BASED TTS FALLBACK */
+        function useBrowserTTS(text) {
+            audioIndicator.style.display = "none";
+
+            // Check if browser supports speech synthesis
+            if (!('speechSynthesis' in window)) {
+                alert("Sorry, your browser doesn't support text-to-speech.");
+                return;
+            }
+
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+
+            // Create speech utterance
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9; // Slightly slower for medical content
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+
+            // Optional: Use a specific voice if available
+            const voices = window.speechSynthesis.getVoices();
+            const englishVoice = voices.find(voice => voice.lang.startsWith('en'));
+            if (englishVoice) {
+                utterance.voice = englishVoice;
+            }
+
+            // Speak the text
+            window.speechSynthesis.speak(utterance);
+        }
 
 
-/* RECORDING + TRANSCRIBING */
-recordBtn.onclick = async () => {
-    if (!isRecording) {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorder = new MediaRecorder(stream);
-        audioChunks = [];
-        isRecording = true;
+        /* SEND MESSAGE */
+        document.getElementById("form").onsubmit = async e => {
+            e.preventDefault();
 
-        recordBtn.classList.add("recording");
-        recordingIndicator.style.display = "block";
+            const text = promptInput.value.trim();
+            if (!text) return;
 
-        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-
-        mediaRecorder.onstop = async () => {
-            recordingIndicator.style.display = "none";
-            transcribingIndicator.style.display = "block";
+            addMessage("user", text);
 
             const fd = new FormData();
-            fd.append("audio", new Blob(audioChunks), "audio.m4a");
+            fd.append("prompt", text);
 
-            const res = await fetch("/speech-to-text", { method: "POST", body: fd });
-            const data = await res.json();
+            const response = await fetch("/llm", { method: "POST", body: fd });
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let output = "";
 
-            promptInput.value = data.transcription;
-            transcribingIndicator.style.display = "none";
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+                output += decoder.decode(value);
+            }
+
+            addMessage("assistant", output);
+            promptInput.value = "";
         };
 
-        mediaRecorder.start();
-    }
 
-    else {
-        isRecording = false;
-        recordBtn.classList.remove("recording");
-        mediaRecorder.stop();
-    }
-};
-</script>
+        /* RECORDING + TRANSCRIBING */
+        recordBtn.onclick = async () => {
+            if (!isRecording) {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                isRecording = true;
+
+                recordBtn.classList.add("recording");
+                recordingIndicator.style.display = "block";
+
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+
+                mediaRecorder.onstop = async () => {
+                    recordingIndicator.style.display = "none";
+                    transcribingIndicator.style.display = "block";
+
+                    const fd = new FormData();
+                    fd.append("audio", new Blob(audioChunks), "audio.m4a");
+
+                    const res = await fetch("/speech-to-text", { method: "POST", body: fd });
+                    const data = await res.json();
+
+                    promptInput.value = data.transcription;
+                    transcribingIndicator.style.display = "none";
+                };
+
+                mediaRecorder.start();
+            }
+
+            else {
+                isRecording = false;
+                recordBtn.classList.remove("recording");
+                mediaRecorder.stop();
+            }
+        };
+    </script>
 
 </body>
+
 </html>
