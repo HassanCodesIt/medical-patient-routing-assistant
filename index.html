@@ -544,7 +544,9 @@
             audioIndicator.style.display = "block";
 
             try {
-                const res = await fetch("/text-to-speech", { method: "POST" });
+                const fd = new FormData();
+                fd.append("text", textContent);
+                const res = await fetch("/text-to-speech", { method: "POST", body: fd });
 
                 // Check if response is OK
                 if (!res.ok) {

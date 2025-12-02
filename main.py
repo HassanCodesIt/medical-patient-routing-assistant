@@ -127,11 +127,11 @@ audio_id=[]
 
 
 @app.post("/text-to-speech")
-def tts():
+def tts(text: str = Form(...)):
     try:
         next_id = len(audio_id) + 1
         
-        tts = gTTS(last_llm_output)
+        tts = gTTS(text)
         filename = f'audio{next_id}.mp3'
         tts.save(filename)
         
@@ -156,3 +156,4 @@ def tts():
             status_code=500,
             detail=f"Unexpected error: {str(e)}"
         )
+    
