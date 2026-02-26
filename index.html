@@ -7,6 +7,14 @@
     <title>Medical Triage Assistant</title>
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700&display=swap');
+
+        :root {
+            --glow-purple: rgba(123, 47, 247, 0.08);
+            --glow-blue: rgba(57, 190, 255, 0.08);
+            --glow-blue-soft: rgba(57, 190, 255, 0.04);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -15,10 +23,11 @@
         }
 
         body {
-            background: #f5f6fa;
+            background: radial-gradient(circle at 10% 20%, var(--glow-purple), transparent 25%), radial-gradient(circle at 90% 10%, var(--glow-blue), transparent 25%), #f6f7fb;
             display: flex;
             justify-content: center;
-            padding: 40px 0;
+            padding: 40px 24px;
+            min-height: 100vh;
         }
 
         /* MAIN CHAT WRAPPER */
@@ -26,9 +35,10 @@
             width: 95%;
             max-width: 850px;
             height: 92vh;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+            background: linear-gradient(135deg, #ffffff 0%, #f5f7ff 100%);
+            border-radius: 24px;
+            border: 1px solid #eef1ff;
+            box-shadow: 0 25px 60px rgba(101, 126, 255, 0.12);
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -40,11 +50,12 @@
             display: flex;
             align-items: center;
             padding: 20px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #eef1ff;
+            background: linear-gradient(120deg, var(--glow-purple), var(--glow-blue-soft));
         }
 
         .avatar {
-            background: #7b2ff7;
+            background: linear-gradient(135deg, #7b2ff7, #d66efd);
             width: 45px;
             height: 45px;
             display: flex;
@@ -54,11 +65,37 @@
             border-radius: 50%;
             font-weight: 600;
             margin-right: 14px;
+            box-shadow: 0 10px 30px rgba(123, 47, 247, 0.25);
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
         .title {
-            font-size: 19px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2a52;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: #5a6480;
+        }
+
+        .status-pill {
+            margin-left: auto;
+            background: rgba(56, 213, 129, 0.12);
+            color: #1e8a58;
+            padding: 10px 14px;
+            border-radius: 12px;
             font-weight: 600;
+            font-size: 12px;
+            border: 1px solid rgba(56, 213, 129, 0.25);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
         }
 
         /* DATE DIVIDER */
@@ -66,16 +103,18 @@
             text-align: center;
             padding: 10px 0;
             font-size: 12px;
-            color: #888;
-            border-bottom: 1px solid #eee;
+            color: #7b84a2;
+            border-bottom: 1px solid #eef1ff;
+            background: linear-gradient(90deg, var(--glow-purple), transparent 30%, transparent 70%, var(--glow-blue));
         }
 
         /* CHAT BODY */
         #messages {
             flex: 1;
-            padding: 20px;
+            padding: 24px;
             overflow-y: auto;
             padding-bottom: 120px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(244, 247, 255, 0.95));
         }
 
         #messages::-webkit-scrollbar {
@@ -90,13 +129,15 @@
         /* BUBBLE STYLES */
         .msg {
             max-width: 75%;
-            padding: 14px 18px;
+            padding: 16px 18px;
             margin: 14px 0;
             border-radius: 18px;
             font-size: 15px;
             line-height: 1.45;
             position: relative;
             animation: fadeIn .25s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+            border: 1px solid transparent;
         }
 
         @keyframes fadeIn {
@@ -112,36 +153,38 @@
         }
 
         .assistant {
-            background: #f0f0f3;
+            background: #f5f6ff;
             margin-right: auto;
             border-bottom-left-radius: 6px;
+            border-color: #e2e6ff;
         }
 
         .user {
-            background: #7b2ff7;
-            color: white;
+            background: linear-gradient(135deg, #7b2ff7, #5b8dff);
+            color: #ffffff;
             margin-left: auto;
             border-bottom-right-radius: 6px;
         }
 
         /* FOLLOW-UP CARD */
         .follow-card {
-            background: #fff6d8;
-            border-left: 6px solid #ffcf3f;
-            color: #6c4a00;
+            background: linear-gradient(135deg, #fff8e5, #fff1c8);
+            border-left: 6px solid #ffc83d;
+            color: #5f4100;
             padding: 16px;
             border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(255, 200, 61, 0.2);
         }
 
         /* FINAL CARD */
         .final-card {
-            background: #e8ffef;
+            background: linear-gradient(135deg, #e7fff2, #d6f6e9);
             border-left: 6px solid #38c172;
             padding: 18px;
             border-radius: 12px;
             color: #1e6f43;
             font-size: 15px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 30px rgba(56, 193, 114, 0.18);
         }
 
         /* SPEAK BUTTON */
@@ -163,28 +206,40 @@
             left: 0;
             width: 100%;
             padding: 18px;
-            background: white;
-            border-top: 1px solid #ddd;
+            background: rgba(255, 255, 255, 0.9);
+            border-top: 1px solid #eef1ff;
             display: flex;
             gap: 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.05);
         }
 
         .composer input {
             flex: 1;
             padding: 14px;
             border-radius: 14px;
-            border: 1px solid #ccc;
+            border: 1px solid #d7def0;
             font-size: 15px;
+            background: #f8faff;
+            transition: all 0.2s ease;
+        }
+
+        .composer input:focus {
+            outline: none;
+            border-color: #7b2ff7;
+            box-shadow: 0 0 0 3px rgba(123, 47, 247, 0.15);
         }
 
         .btn-send {
             padding: 14px 20px;
             border-radius: 14px;
-            background: #7b2ff7;
+            background: linear-gradient(135deg, #7b2ff7, #5b8dff);
             border: none;
             color: white;
             cursor: pointer;
             font-weight: 600;
+            box-shadow: 0 10px 25px rgba(123, 47, 247, 0.25);
+            transition: transform 0.15s ease, box-shadow 0.2s ease;
         }
 
         .btn-record {
@@ -195,11 +250,19 @@
             color: white;
             cursor: pointer;
             font-weight: 600;
+            box-shadow: 0 10px 25px rgba(255, 77, 79, 0.25);
+            transition: transform 0.15s ease, box-shadow 0.2s ease;
         }
 
         .btn-record.recording {
             background: #c40000;
             box-shadow: 0 0 12px rgba(255, 0, 0, 0.5);
+        }
+
+        .btn-send:hover,
+        .btn-record:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.08);
         }
 
         /* INDICATORS */
@@ -272,6 +335,8 @@
             /* HEADER */
             .chat-header {
                 padding: 15px;
+                gap: 8px;
+                flex-wrap: wrap;
             }
 
             .avatar {
@@ -283,6 +348,13 @@
 
             .title {
                 font-size: 16px;
+            }
+
+            .status-pill {
+                margin-left: 0;
+                padding: 8px 12px;
+                flex: 1 1 100%;
+                text-align: center;
             }
 
             /* DATE DIVIDER */
@@ -425,7 +497,11 @@
         <!-- HEADER -->
         <div class="chat-header">
             <div class="avatar">MT</div>
-            <div class="title">Medical Triage Assistant</div>
+            <div class="header-text">
+                <div class="title">Medical Triage Assistant</div>
+                <div class="subtitle">Clinical-grade routing with empathetic guidance</div>
+            </div>
+            <div class="status-pill">Live</div>
         </div>
 
         <!-- DATE -->
